@@ -2,16 +2,14 @@
 
 namespace App\Models;
 
-use App\Models\Traits\HasComments;
 use App\User;
 use Illuminate\Database\Eloquent\Model;
 
-class Post extends Model
+class Comment extends Model
 {
-    use HasComments;
 
     protected $fillable = [
-        'title', 'content', 'user_id'
+        'user_id', 'post_id', 'content'
     ];
 
     function user() {

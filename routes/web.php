@@ -14,3 +14,15 @@ Route::get('/home', 'HomeController@index')
 
 // CRUD routes
 Route::resource('posts', 'PostController');
+
+Route::name('comments.')
+    ->prefix('comments')
+    ->middleware('auth')
+    ->group(function () {
+
+        Route::post('/', 'CommentController@store')
+            ->name('store');
+        Route::delete('/{comment}', 'CommentController@destroy')
+            ->name('destroy');
+
+    });

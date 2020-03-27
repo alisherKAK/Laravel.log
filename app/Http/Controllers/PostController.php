@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Post;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use function dd;
 
 class PostController extends Controller
 {
@@ -40,9 +42,10 @@ class PostController extends Controller
         $request->validate($this->rules());
 
         $data = $request->except('_token');
-        $post = new Post($data);
-        $post->user_id = auth()->user()->id;
-        $post->save();
+
+        /** @var \App\User $user */
+        $user = auth()->user();
+        $post = $user->posts()->create($data);
 
         return redirect()->route('posts.show', $post);
     }
