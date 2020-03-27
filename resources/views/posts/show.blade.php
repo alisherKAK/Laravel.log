@@ -28,6 +28,9 @@
         </p>
         <h1>{{ $post->title }}</h1>
         <p class="lead">{{ $post->content }}</p>
+        <div class="d-flex">
+            <button id="like" class="btn ml-auto" @if(!auth()->check()) disabled @endif>&#x1F90D; <span class="count"></span></button>
+        </div>
     </div>
 
     @if (auth()->check())
@@ -75,14 +78,16 @@
     @endforelse
 
     <script>
-        let link = document.querySelector('.delete-link');
-        let id = link.dataset.target;
 
-        link.addEventListener('click', function (event) {
-            event.preventDefault();
-            let form = document.getElementById(id);
-            form.submit();
-        });
+        let link = document.querySelector('.delete-link');
+        if (link) {
+            let id = link.dataset.target;
+            link.addEventListener('click', function (event) {
+                event.preventDefault();
+                let form = document.getElementById(id);
+                form.submit();
+            });
+        }
 
         let commentLinks = document.querySelectorAll('.comment-delete');
         for (let i = 0; i < commentLinks.length; i++) {
@@ -95,6 +100,50 @@
                 form.submit();
             });
         }
+
+        function updateLikesCount(el) {
+            axios.post( '{{ route('posts.likes.count', $post) }}' ).then(function (res) {
+                let count = res.data['count'];
+                let span = el.querySelector('span');
+                span.innerHTML = count;
+            });
+        }
+
+        function checkIsLiked(el) {
+            axios.post( '{{ route('posts.likes.is_liked', $post) }}' ).then(function (res) {
+                let is_liked = res.data['is_liked'];
+
+                if (is_liked) {
+                    el.classList.remove('btn-secondary');
+                    el.classList.add('btn-danger');
+                } else {
+                    el.classList.add('btn-secondary');
+                    el.classList.remove('btn-danger');
+                }
+            });
+        }
+
+        let likeBtn = document.getElementById('like');
+
+        window.onload = function() {
+            updateLikesCount(likeBtn);
+            checkIsLiked(likeBtn);
+        };
+
+        likeBtn.addEventListener('click', function () {
+
+            axios.post( '{{ route('posts.like', $post) }}' ).then(function (response) {
+                let data = response.data;
+
+                if (data.status === 200) {
+                    updateLikesCount(likeBtn);
+                    checkIsLiked(likeBtn);
+                }
+
+            });
+
+        });
+
     </script>
 
 @endsection

@@ -15,6 +15,14 @@ Route::get('/home', 'HomeController@index')
 // CRUD routes
 Route::resource('posts', 'PostController');
 
+Route::post('/posts/{post}/likes/count', 'LikeController@count')
+    ->name('posts.likes.count');
+Route::post('/posts/{post}/is_liked', 'LikeController@isLiked')
+    ->name('posts.likes.is_liked');
+Route::post('/posts/like/{post}', 'LikeController@like')
+    ->name('posts.like')
+    ->middleware('auth');
+
 Route::name('comments.')
     ->prefix('comments')
     ->middleware('auth')
@@ -26,3 +34,4 @@ Route::name('comments.')
             ->name('destroy');
 
     });
+
