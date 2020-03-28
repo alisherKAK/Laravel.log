@@ -23,6 +23,12 @@ Route::post('/posts/like/{post}', 'LikeController@like')
     ->name('posts.like')
     ->middleware('auth');
 
+
+Route::post('/posts/{post}/is_favorite', 'FavoriteController@isFavorite')
+    ->name('posts.favorite.is_favorite');
+Route::post('/posts/favorite/{post}', 'FavoriteController@add')
+    ->name('posts.favorite');
+
 Route::name('comments.')
     ->prefix('comments')
     ->middleware('auth')

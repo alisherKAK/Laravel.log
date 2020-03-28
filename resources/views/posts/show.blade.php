@@ -28,7 +28,8 @@
         </p>
         <h1>{{ $post->title }}</h1>
         <p class="lead">{{ $post->content }}</p>
-        <div class="d-flex">
+        <button id="favorite" class="btn ml-auto" @if(!auth()->check()) disabled @endif>&#x2B50;</button>
+        <div class="d-flex my-2">
             <button id="like" class="btn ml-auto" @if(!auth()->check()) disabled @endif>&#x1F90D; <span class="count"></span></button>
         </div>
     </div>
@@ -125,11 +126,6 @@
 
         let likeBtn = document.getElementById('like');
 
-        window.onload = function() {
-            updateLikesCount(likeBtn);
-            checkIsLiked(likeBtn);
-        };
-
         likeBtn.addEventListener('click', function () {
 
             axios.post( '{{ route('posts.like', $post) }}' ).then(function (response) {
@@ -143,6 +139,41 @@
             });
 
         });
+
+        function checkIsFavorite(el) {
+            axios.post('{{route('posts.favorite.is_favorite', $post)}}')
+                .then(function (res) {
+                    let isFavorite = res.data['is_favorite'];
+
+                    if(isFavorite) {
+                        el.classList.remove('btn-secondary');
+                        el.classList.add('btn-primary');
+                    }
+                    else {
+                        el.classList.add('btn-secondary');
+                        el.classList.remove('btn-primary');
+                    }
+
+                });
+        }
+
+        let favoriteBtn = document.getElementById('favorite');
+
+        favoriteBtn.addEventListener('click', function () {
+            axios.post('{{route('posts.favorite', $post)}}')
+                .then(function (res) {
+                    $status = res.data['status'];
+                    if($status === 200)
+                        checkIsFavorite(favoriteBtn);
+                });
+        });
+
+        window.onload = function() {
+            updateLikesCount(likeBtn);
+            checkIsLiked(likeBtn);
+
+            checkIsFavorite(favoriteBtn);
+        };
 
     </script>
 

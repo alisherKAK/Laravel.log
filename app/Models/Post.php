@@ -22,4 +22,7 @@ class Post extends Model
         return $this->hasMany(Like::class);
     }
 
+    function favorites() {
+        return $this->hasMany(Favorite::class);
+    }
 }
